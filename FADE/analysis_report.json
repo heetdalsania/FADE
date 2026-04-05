@@ -1,0 +1,50 @@
+[
+  {
+    "step_number": 1,
+    "original_description": "Plan the weekly PR digest workflow",
+    "classification": "RULE_BASED",
+    "reasoning": "Fixed pipeline sequence \u2014 no AI reasoning needed. The plan is always: fetch, classify, summarize, format, post."
+  },
+  {
+    "step_number": 2,
+    "original_description": "Fetch merged PRs from GitHub API",
+    "classification": "DETERMINISTIC",
+    "reasoning": "Pure HTTP GET to GitHub REST API. Same parameters always produce the same API call."
+  },
+  {
+    "step_number": 3,
+    "original_description": "Fetch file changes for each merged PR",
+    "classification": "DETERMINISTIC",
+    "reasoning": "Pure HTTP GET to GitHub REST API for each PR's file list. Completely deterministic."
+  },
+  {
+    "step_number": 4,
+    "original_description": "Categorize each PR by type",
+    "classification": "RULE_BASED",
+    "reasoning": "Keyword matching on titles and file path patterns achieves 80%+ accuracy without AI."
+  },
+  {
+    "step_number": 5,
+    "original_description": "Generate concise summary for each PR",
+    "classification": "AI_REQUIRED",
+    "reasoning": "Generating meaningful one-sentence summaries genuinely requires language understanding."
+  },
+  {
+    "step_number": 6,
+    "original_description": "Decide on formatting structure for Slack message",
+    "classification": "RULE_BASED",
+    "reasoning": "Fixed template \u2014 header, category sections with emoji, PR links. Static decision."
+  },
+  {
+    "step_number": 7,
+    "original_description": "Format the Slack digest message",
+    "classification": "RULE_BASED",
+    "reasoning": "String formatting with a predefined template and iteration. Pure string manipulation."
+  },
+  {
+    "step_number": 8,
+    "original_description": "Post formatted digest to Slack webhook",
+    "classification": "DETERMINISTIC",
+    "reasoning": "Pure HTTP POST to Slack webhook URL with the formatted message payload."
+  }
+]

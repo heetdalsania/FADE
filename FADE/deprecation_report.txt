@@ -1,0 +1,79 @@
+============================================================
+  DEPRECATION REPORT
+  The Self-Eliminating Agent
+============================================================
+
+  Task:  weekly_pr_digest
+  Repo:  facebook/react
+  Date:  2026-04-04 10:05 UTC
+  Agent execution time: 39.0s
+
+------------------------------------------------------------
+  STEP-BY-STEP CLASSIFICATION
+------------------------------------------------------------
+  🟡 Step 1: Plan the weekly PR digest workflow
+     → RULE_BASED: Fixed pipeline sequence — no AI reasoning needed
+
+  🟢 Step 2: Fetch merged PRs from GitHub API
+     → DETERMINISTIC: Pure HTTP GET to GitHub REST API
+
+  🟢 Step 3: Fetch file changes for each merged PR
+     → DETERMINISTIC: Pure HTTP GET to GitHub REST API per PR
+
+  🟡 Step 4: Categorize each PR into bug_fix, new_feature, refac
+     → RULE_BASED: Keyword matching on titles and file paths achieves 80%+ accuracy
+
+  🔴 Step 5: Generate concise summary for each PR
+     → AI_REQUIRED: Coherent summarization genuinely needs language understanding
+
+  🟡 Step 6: Decide on formatting structure for Slack message
+     → RULE_BASED: Fixed template decision — static structure, no dynamic reasoning
+
+  🟡 Step 7: Format the Slack digest message
+     → RULE_BASED: String formatting with predefined template and iteration
+
+  🟢 Step 8: Post formatted digest to Slack webhook
+     → DETERMINISTIC: Pure HTTP POST to Slack webhook URL
+
+------------------------------------------------------------
+  CLASSIFICATION SUMMARY
+------------------------------------------------------------
+  Total steps:        8
+  🟢 Deterministic:   3
+  🟡 Rule-based:      4
+  🔴 AI-required:     1
+
+------------------------------------------------------------
+  COMPUTED METRICS
+------------------------------------------------------------
+  ┌──────────────────────────────────────────────────────────────────────────────────────────┐
+  │  AI DEPENDENCY:  100%  →  12%                                                           │
+  │  COST PER RUN:   $0.064125 (gemini-2.5-pro)  →  $0.000135 (gemini-2.5-flash)           │
+  │  COST REDUCTION: 100%                                                                   │
+  │  YEARLY SAVINGS: $3.3247 (52 runs)                                                      │
+  └──────────────────────────────────────────────────────────────────────────────────────────┘
+
+------------------------------------------------------------
+  COST BREAKDOWN
+------------------------------------------------------------
+  Agent (gemini-2.5-pro):
+    Input tokens:  ~12,100
+    Output tokens: ~4,900
+    Cost: $0.064125
+  Pipeline (gemini-2.5-flash):
+    Input tokens:  ~500
+    Output tokens: ~100
+    AI calls: 1
+    Cost: $0.000135
+
+------------------------------------------------------------
+  GENERATED ARTIFACTS
+------------------------------------------------------------
+  ✅ generated_pipeline.py
+  ✅ analysis_report.json
+  ✅ categorization_rules.py
+  ✅ deprecation_report.txt
+
+============================================================
+  "You don't need me anymore." — The Agent
+============================================================

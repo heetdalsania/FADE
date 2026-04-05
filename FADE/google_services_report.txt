@@ -1,0 +1,19 @@
+# Google Services Used in FADE
+
+The FADE (Fast Agent Deprecation Engine) project utilizes a few different Google services to power its AI and delivery capabilities. Here is a comprehensive list:
+
+## 1. Vertex AI (Google Cloud Platform)
+- **SDK**: `google-genai`
+- **Usage**: The core AI logic accesses Gemini models through the Google Cloud Vertex AI endpoint. This is explicitly configured by passing `vertexai=True` in the client initialization and relies on the `GOOGLE_CLOUD_PROJECT` and `GOOGLE_CLOUD_LOCATION` environment variables.
+- **Models Used**:
+  - `gemini-2.5-pro`: Used for the heavy-lifting in the raw Agent workflow (interpreting goals, deciding which tools to call) and in the Self-Analysis Phase (classifying whether a step is deterministic, rule-based, or AI-required).
+  - `gemini-2.5-flash`: Used in the optimized Pipeline workflow to quickly and cheaply generate one-sentence summaries of Pull Requests.
+
+## 2. Gmail SMTP Server
+- **Service**: Google Workspace / Gmail (SMTP Port 587)
+- **Usage**: The delivery module (`pipeline_runner.py`) uses `smtp.gmail.com` to send the final Deprecation Digest via email.
+- **Authentication**: This requires a standard Gmail account and an associated "App Password" (to bypass 2FA requirements for programmatic SMTP access).
+
+## 3. Google Fonts
+- **Service**: Google Fonts API
+- **Usage**: The frontend dashboard (`dashboard.html` and `dashboard_styles.css`) requests web fonts (`Inter` and `JetBrains Mono`) directly from `fonts.googleapis.com` to render the UI.
