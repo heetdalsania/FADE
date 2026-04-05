@@ -1,103 +1,143 @@
-# FADE - Fast Agent Deprecation Engine 🚀
+# FADE — Fast Agent Deprecation Engine
 
-FADE (Fast Agent Deprecation Engine) is an autonomous, self-analyzing platform designed to generate high-quality periodic (e.g., weekly) Pull Request digests for GitHub repositories. It fetches PR data, intelligently categorizes changes, generates concise summaries (via Gemini AI or local rule-based parsing), formats them beautifully, and posts them to channels like Slack, Discord, Microsoft Teams, and Email.
+FADE is an autonomous, self-analyzing platform that generates weekly Pull Request digests for any GitHub repository — and then figures out which parts of itself no longer need AI to do it.
 
-The unique premise of FADE lies in its architecture: an AI agent that **watches its own execution trace**, categorizing and transitioning its AI-dependent reasoning steps into deterministic code snippets once a fixed pattern is established, essentially "deprecating" its reliance on the AI model for repeated tasks to save cost and increase performance.
+The core idea: an AI agent executes a real workflow, logs every step it takes, and then reads its own execution trace to classify each step as `DETERMINISTIC`, `RULE_BASED`, or `AI_REQUIRED`. It generates a leaner pipeline that replaces AI calls with deterministic code wherever possible, cutting per-run cost by up to 99.8% without changing the output.
 
-## 🌟 Features
+---
 
-*   **Multi-Channel Digest Delivery:** Automatically broadcast digest reports to:
-    *   Slack & Discord (via webhooks)
-    *   Microsoft Teams (Adaptive Cards)
-    *   Email (Server-side Gmail SMTP delivery)
-*   **Intelligent Categorization:** Automatically sort PRs into insightful categories like `New Features`, `Bug Fixes`, `Refactors`, `Tests`, `Documentation`, and `Chores`.
-*   **Dual-Mode Summarization:**
-    *   *AI Mode:* Uses Google Gemini 2.5 Flash/Pro for human-like PR summarization.
-    *   *Local Mode:* Deterministic parsing of PR body for local execution fallback.
-*   **Interactive Dashboard UI:** Includes a comprehensive web dashboard (`dashboard.html`) equipped with real-time SSE (Server-Sent Events) pipeline tracing and delivery status visualization.
-*   **Execution Tracing:** FADE logs every step (both API "tool calls" and AI "reasoning") into a JSON trace format, later analyzing it to classify steps into `RULE_BASED`, `DETERMINISTIC`, or `AI_REQUIRED`.
+## How It Works
 
-## 📂 Project Structure
+**Phase 1 — Agent Execution**
+The agent runs the full PR digest workflow against a real GitHub repository. Every step — API calls, categorization decisions, summary generation, formatting, and delivery — is logged into an execution trace with timestamps and step types.
 
-*   `server.py`: The FADE Dashboard HTTP Server, serving the UI and API endpoints. 
-*   `pipeline_runner.py`: The robust pipeline execution and delivery module (runs GitHub extraction, categorization, formatting, and webhook/SMTP dispatch).
-*   `agent.py`: The core autonomous agent logic demonstrating the "Self-Eliminating Agent" concept and generating execution traces.
-*   `dashboard.html / css / js`: The frontend Web Dashboard client.
+**Phase 2 — Self-Analysis**
+The agent reads its own trace and classifies every step. Steps that are always the same HTTP call become `DETERMINISTIC`. Steps that follow predictable patterns (like keyword-based PR categorization) become `RULE_BASED`. Only steps that genuinely require language understanding stay `AI_REQUIRED`.
 
-## 📋 Prerequisites
+**Phase 3 — Pipeline Generation**
+FADE generates a standalone Python pipeline that replaces all `DETERMINISTIC` and `RULE_BASED` steps with plain code, and downgrades remaining AI calls from Gemini 2.5 Pro to Gemini 2.5 Flash. The output is a working script, a cost comparison report, and a side-by-side digest comparison proving the output is identical.
 
-*   Python 3.8+
-*   Google Cloud Platform project (if using Gemini AI features)
-*   GitHub Personal Access Token (for fetching PR data)
+---
 
-## 🛠️ Installation
+## Features
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository_url>
-   cd FADE
-   ```
+- **Real-time dashboard** — browser-based UI with live step-by-step execution tracing via Server-Sent Events (SSE)
+- **Multi-channel delivery** — Slack, Discord, Microsoft Teams (Adaptive Cards), and Email (Gmail SMTP)
+- **Intelligent PR categorization** — keyword scoring across title, body, and file paths; validated against real PR data
+- **Dual summarization modes** — Gemini 2.5 Flash for AI summaries, deterministic body parsing as a zero-cost fallback
+- **Cost analysis** — per-run and annualized savings computed from token estimates and model pricing
+- **Generated artifacts** — `generated_pipeline.py`, `analysis_report.json`, `categorization_rules.py`, `deprecation_report.txt`
 
-2. **Install dependent Python libraries:**
-   ```bash
-   pip install requests google-genai
-   ```
+---
 
-## ⚙️ Environment Variables Setup
+## Project Structure
 
-Depending on the pieces of FADE you want to utilize, you need to set up certain environment variables. 
+```
+server.py              — HTTP server, SSE streaming, API endpoints
+pipeline_runner.py     — Phases 1–3 execution engine and delivery
+agent.py               — Standalone CLI agent with execution trace logging
+dashboard.html         — Frontend dashboard
+dashboard_app.js       — React UI (SSE client, real-time phase rendering)
+dashboard_styles.css   — Dashboard styles
+phase2_improved.py     — Offline self-analysis runner (CLI)
+categorization_rules.py — Generated keyword-scoring categorization function
+```
 
-### GitHub Setup (Required)
+---
+
+## Prerequisites
+
+- Python 3.8+
+- Google Cloud Platform project with Vertex AI enabled (for Gemini features)
+- GitHub Personal Access Token (recommended; required for private repos)
+
+---
+
+## Installation
+
 ```bash
+git clone <repository_url>
+cd FADE
+pip install requests google-genai
+```
+
+---
+
+## Environment Variables
+
+```bash
+# Required for fetching PR data
 export GITHUB_TOKEN="ghp_your_github_token"
-export GITHUB_REPO="owner/repo" # e.g. "facebook/react" (used for agent.py test runs)
-```
 
-### Google Cloud & Gemini Platform Setup (Optional, for AI summarizations)
-```bash
-export GOOGLE_CLOUD_PROJECT="your-google-project-id"
+# Required for AI summarization (Phase 1 and 2)
+export GOOGLE_CLOUD_PROJECT="your-gcp-project-id"
 export GOOGLE_CLOUD_LOCATION="us-central1"
-# Ensure your local gcloud application-default auth is set if required for Vertex AI
-```
 
-### Email Notifications via Gmail SMTP (Optional)
-To enable FADE to send emails, you need an app password from your Google account.
-```bash
-export FADE_EMAIL_SENDER="your-email@gmail.com" # E.g., fadeeeeai@gmail.com
-export FADE_EMAIL_PASSWORD="your-app-password"  # Your Google App Password (not your usual password)
-```
-
-### Webhook Notification Channels Setup (Optional)
-```bash
+# Optional — Slack webhook delivery
 export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/xxx/yyy/zzz"
+
+# Optional — Email delivery (Gmail App Password, not your account password)
+export FADE_EMAIL_SENDER="your-email@gmail.com"
+export FADE_EMAIL_PASSWORD="your-app-password"
 ```
 
-## 🚀 Usage Guide
+For Google Cloud authentication:
+```bash
+gcloud auth application-default login
+```
 
-### 1. Starting the Full FADE Dashboard Server
-Run the local HTTP server to launch the frontend web interface:
+---
+
+## Usage
+
+**Start the dashboard server:**
 ```bash
 python server.py 8080
+# Open http://localhost:8080/dashboard.html
 ```
-Then, navigate your browser to:
-`http://localhost:8080/dashboard.html`
 
-From the interactive dashboard, you can trigger pipeline runs against any repository, provide GitHub tokens securely via the UI, visualize the execution trace in real-time, and download execution reports.
+Enter any public GitHub repo (`owner/repo`), optionally add a token and delivery channels, and hit Run. FADE streams all three phases live to the browser.
 
-### 2. Running The Autonomous Agent Directly (CLI)
-You can directly execute the main agent sequence outside the server wrapper.
-
-**Manual (Local) Deterministic Mode** (Runs local heuristic categorization and dry-runs notifications without utilizing Gemini):
+**Run the agent from the CLI:**
 ```bash
+# Local mode — no Gemini required, uses deterministic categorization
 python agent.py --manual
-```
 
-**AI Agent Mode** (Invokes Gemini to reason about PR topics and formats):
-```bash
+# Full AI mode — requires GOOGLE_CLOUD_PROJECT
 python agent.py
 ```
-*Note: Ensure `GOOGLE_CLOUD_PROJECT` is set before running in AI Agent Mode.*
 
-## 📈 Cost Analysis Engine
+**Run self-analysis offline (after generating a trace):**
+```bash
+python phase2_improved.py
+```
 
-FADE runs an embedded cost calculation to evaluate efficiency gains: computing the financial impact of shifting repetitive reasoning nodes (traditionally routed to large foundation models) into hard-coded scripted steps, outputting the projected savings locally per repository.
+---
+
+## AI & Tool Disclosure
+
+FADE uses the following external AI models and tools. All core logic — the execution trace design, the three-phase self-analysis architecture, the step classification system, the rule extraction and validation loop, the pipeline code generation, and the cost analysis engine — was designed and implemented by our team.
+
+| Tool / Service | Role |
+|---|---|
+| **Gemini 2.5 Pro** (via Vertex AI) | Agent execution, step classification in Phase 2, categorization rule extraction and repair |
+| **Gemini 2.5 Flash** (via Vertex AI) | PR summary generation in the optimized pipeline |
+| **Google Fonts** (Inter, JetBrains Mono) | Dashboard typography |
+| **React 18** (CDN) | Dashboard frontend rendering |
+| **Babel Standalone** (CDN) | In-browser JSX transpilation (no build step) |
+
+FADE is not a wrapper around an existing tool. The self-deprecating agent pattern — where an agent analyzes its own execution trace and generates leaner code to replace itself — is the original contribution of this project. The AI models are used as components inside a larger system designed entirely by our team.
+
+---
+
+## Cost Analysis
+
+For a weekly PR digest on `microsoft/vscode` (30 PRs):
+
+| | Model | Cost per run |
+|---|---|---|
+| Original agent | Gemini 2.5 Pro (all 8 steps) | ~$0.056 |
+| Generated pipeline | Gemini 2.5 Flash (1 step only) | ~$0.000135 |
+| **Reduction** | | **99.8%** |
+
+7 of 8 steps were replaced with deterministic Python. Only PR summarization genuinely required a language model.
