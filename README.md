@@ -129,15 +129,3 @@ FADE uses the following external AI models and tools. All core logic — the exe
 FADE is not a wrapper around an existing tool. The self-deprecating agent pattern — where an agent analyzes its own execution trace and generates leaner code to replace itself — is the original contribution of this project. The AI models are used as components inside a larger system designed entirely by our team.
 
 ---
-
-## Cost Analysis
-
-For a weekly PR digest on `microsoft/vscode` (30 PRs):
-
-| | Model | Cost per run |
-|---|---|---|
-| Original agent | Gemini 2.5 Pro (all 8 steps) | ~$0.056 |
-| Generated pipeline | Gemini 2.5 Flash (1 step only) | ~$0.000135 |
-| **Reduction** | | **99.8%** |
-
-7 of 8 steps were replaced with deterministic Python. Only PR summarization genuinely required a language model.
